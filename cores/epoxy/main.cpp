@@ -15,6 +15,8 @@
  * inserts it into the Serial buffer.
  */
 
+#ifdef EPOXY_DUINO
+
 #include "Arduino.h"
 
 #if defined(__MINGW32__)
@@ -94,7 +96,7 @@ static void enableRawMode() {
     raw.c_cflag |= (CS8);
 
     // Enable ISIG to allow Ctrl-C to kill the program.
-    raw.c_lflag &= ~(/*ECHO | ISIG |*/ ICANON | IEXTEN);
+    raw.c_lflag &= ~(ECHO | /*ISIG |*/ ICANON | IEXTEN);
     raw.c_cc[VMIN] = 0;
     raw.c_cc[VTIME] = 0;
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
@@ -139,6 +141,17 @@ static int epoxyduino_main(int argc, char** argv) {
   }
 }
 
+void enableTerminalEcho() {
+  struct termios term;
+  if (tcgetattr(STDIN_FILENO, &term) == -1) {
+    return;
+  }
+  term.c_lflag |= ECHO;
+  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &term) == -1) {
+    return;
+  }
+}
+
 #if defined(__MINGW32__)
 
 // Weak references to main() do not work properly under MING32.
@@ -153,7 +166,8 @@ int main(int argc, char** argv) {
 #else
 
 // Weak reference so that the calling code can provide its own main().
-int main(int argc, char** argv) __attribute__((weak));
+int main(int argc, char** argv)
+__attribute__((weak));
 
 int main(int argc, char** argv) {
   return epoxyduino_main(argc, argv);
@@ -162,3 +176,5 @@ int main(int argc, char** argv) {
 #endif // #if defined(__MINGW32__)
 
 }
+
+#endif // #ifdef EPOXY_DUINO

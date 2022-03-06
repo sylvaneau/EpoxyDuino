@@ -14,8 +14,8 @@
 #define EPOXY_DUINO_EPOXY_ARDUINO_H
 
 // xx.yy.zz => xxyyzz (without leading 0)
-#define EPOXY_DUINO_VERSION 10100
-#define EPOXY_DUINO_VERSION_STRING "1.1.0"
+#define EPOXY_DUINO_VERSION 10203
+#define EPOXY_DUINO_VERSION_STRING "1.2.3"
 
 #include <algorithm> // min(), max()
 #include <cmath> // abs()
@@ -253,6 +253,16 @@ extern int epoxy_argc;
 
 /** Copy of the argv parameter of main() as a global variable. */
 extern const char* const* epoxy_argv;
+
+/**
+ * Enable echoing of each character. By default echoing is turned off for
+ * consistency with the behavior of the serial port of a real Arduino
+ * microcontroller. However when running on a Unix machine inside a terminal
+ * emulator, it is often more useful to enable echoing so that the user can see
+ * the characters being typed. This function should be called in the setup(),
+ * guarded by a `#if defined(EPOXY_DUINO)`.
+ */
+void enableTerminalEcho();
 
 }
 

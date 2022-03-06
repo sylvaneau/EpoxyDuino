@@ -1,6 +1,50 @@
 # Changelog
 
 * Unreleased
+    * Add support for `EXTRA_CPPFLAGS`, similar to `EXTRA_CXXFLAGS`.
+* 1.2.3 (2022-02-24)
+    * Rename `unixhostduino_main()` to `epoxyduino_main()`, and make it
+      static. No need to expose it publicly.
+    * Add `enableTerminalEcho()` function to enable terminal echoing.
+      See [Enable Terminal Echo](README.md#EnableTerminalEcho).
+    * Update examples and [EpoxyFS/README.md](libraries/EpoxyFS) to be
+      compatible with new `LittleFS` library in ESP32 >=2.0.0.
+    * Add [EpoxyFS/SeekBenchmark](libraries/EpoxyFSexamples/SeekBenchmark) to
+      measure the performance loss of calling `seek()` before a `read()`.
+        * Sometimes the client-code is simpler when reading multiple records
+          if it can call `seek()` with an explicit offset before each `read()`.
+        * The alternative would be calling `read()` multiple times sequentially
+          and using its internal cursor to advance automatically.
+        * This benchmark shows that `seek()` causes significant performance
+          loss, even if the `seek()` offset is identical to the internal cursor,
+          so might be expected to be optimized away.
+    * Add notes about [Debugging](README.md#Debugging) tools and options
+      under a Unix environment, such as Valgrind.
+* 1.2.2 (2022-02-02)
+    * Add a `using Print::write` statement in `StdioSerial.h` to
+      pull in all other overloaded `write()` methods from the parent `Print`
+      class.
+* 1.2.1 (2022-01-10)
+    * Add `strncasecmp_P()` to `pgmspace.h`. See
+      [PR#52](https://github.com/bxparks/EpoxyDuino/pull/52).
+    * Add [Bugs and Limitations](README.md#BugsAndLimitations) section in
+      README.md
+    * Add comment in [aunit_tests.yml](.github/workflows/aunit_tests.yml)
+      that a `pull_request` event may be useful. Upgrade GitHub docker image to
+      Ubuntu 20.04.
+* 1.2.0 (2021-12-29)
+    * Simplify `StdioSerial`  class, see
+      [Issue#43](https://github.com/bxparks/EpoxyDuino/issues/43).
+        * Replace input ring buffer with a buffer of one character.
+        * Wire `StdioSerial::write(uint8_t)` directly to Posix `write()`,
+          by-passing the `<stdio.h>` buffer. `flush()` is no longer necessary.
+        * Thanks to @felias-fogg.
+    * **Revert Breaking Change Made in v1.1.0** Revert 432e304, so that
+      `Print::writeln()` writes `\r\n` again by default.
+        * Fixes [Issue#45](https://github.com/bxparks/EpoxyDuino/issues/45).
+        * Add `Print::setLineModeNormal()` and `Print::setLineModeUnix()`
+          methods to control the line termination behavior.
+        * See [README.md#UnixLineMode](README.md#UnixLineMode) for usage info.
 * 1.1.0 (2021-12-09)
     * Add optional `DEPS` variable containing header files that the `*.ino`
       depends on.
